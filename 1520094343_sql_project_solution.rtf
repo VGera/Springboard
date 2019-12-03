@@ -3,10 +3,10 @@
 {\*\generator Riched20 10.0.18362}\viewkind4\uc1 
 \pard\f0\fs22\lang1033 /* Welcome to the SQL mini project. For this project, you will use
 Springboard' online SQL platform, which you can log into through the
-following link:\par
-\par
+following link:
+
 {{\field{\*\fldinst{HYPERLINK https://sql.springboard.com/ }}{\fldrslt{https://sql.springboard.com/\ul0\cf0}}}}\f0\fs22
-Username: student\par
+Username: student
 Password: learn_sql@springboard
 
 The data you need is in the "country_club" database. This database
@@ -14,9 +14,9 @@ contains 3 tables:
     i) the "Bookings" table,
     ii) the "Facilities" table, and
     iii) the "Members" table.
-\par
+
 Note that, if you need to, you can also download these tables locally.
-\par
+
 In the mini project, you'll be asked a series of questions. You can
 solve them using the platform, but for the final deliverable,
 paste the code for each solution into this script, and upload it
@@ -26,8 +26,8 @@ exploring the data, and getting acquainted with the 3 tables. */
 
 /* Q1: Some of the facilities charge a fee to members, but some do not.
 Please list the names of the facilities that do. */
-\b Sol:\par
-\b0 SELECT Facilities.name , Facilities.name
+ Sol:
+ SELECT Facilities.name , Facilities.name
 FROM Facilities\par
 WHERE ( Facilities.membercost =0 )
 ORDER BY Facilities.name 
@@ -42,14 +42,14 @@ WHERE ( Facilities.membercost =0 )
 where the fee is less than 20% of the facility's monthly maintenance cost?
 Return the facid, facility name, member cost, and monthly maintenance of the
 facilities in question. */
-\b Sol:
+Sol:
 SELECT Facilities.facid , Facilities.name , Facilities.membercost , Facilities.monthlymaintenance
 FROM Facilities
 WHERE ( Facilities.membercost < ( 0.2 * ( Facilities.monthlymaintenance ) ))
 
 /* Q4: How can you retrieve the details of facilities with ID 1 and 5?
 Write the query without using the OR operator. */\par
-\b Sol:
+Sol:
 SELECT Facilities . *
 FROM Facilities
 WHERE (
@@ -120,7 +120,7 @@ ORDER BY 2 DESC
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
-Sol:(Could not solve fully this one)
+Sol:(Could not solve fully this Question)
 SELECT F.name, sub.fac, F.membercost, F.guestcost, sub.mem,
 CASE WHEN sub.mem >0
 THEN F.membercost
