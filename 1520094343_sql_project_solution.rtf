@@ -29,7 +29,7 @@ Please list the names of the facilities that do. */
  Sol:
  SELECT Facilities.name , Facilities.name
 FROM Facilities\par
-WHERE ( Facilities.membercost =0 )
+WHERE ( Facilities.membercost >0 )
 ORDER BY Facilities.name 
 
 /* Q2: How many facilities do not charge a fee to members? */
@@ -77,11 +77,6 @@ ORDER BY Members.joindate DESC
 /* Q7: How can you produce a list of all members who have used a tennis court?
 Include in your output the name of the court, and the name of the member formatted as a single column. Ensure no duplicate data, and order by the member name. */\par
 Sol:
-SELECT *
-FROM Bookings
-INNER JOIN Members ON Bookings.memid = Members.memid
-INNER JOIN Facilities ON Bookings.facid = Facilities.facid
-ORDER BY Members.firstname
 
 SELECT DISTINCT F.name as facility_name,
                 concat(M.firstname , ' ', M.surname) as member_name 
@@ -120,19 +115,39 @@ ORDER BY 2 DESC
 /* Q10: Produce a list of facilities with a total revenue less than 1000.
 The output of facility name and total revenue, sorted by revenue. Remember
 that there's a different cost for guests and members! */
-Sol:(Could not solve fully this Question)
-SELECT F.name, sub.fac, F.membercost, F.guestcost, sub.mem,
-CASE WHEN sub.mem >0
-THEN F.membercost
-ELSE F.guestcost
-END AS Tcost
-FROM (
-
-SELECT B.facid AS fac, B.memid AS mem
- FROM Bookings B\par
-INNER JOIN Members M ON B.memid = M.memid
- )sub
-INNER JOIN Facilities F ON sub.fac = F.facid
-GROUP BY F.name, sub.fac
-
-}
+Sol:
+select name, revenue from (
+  -- Revenue = Income - Expense
+  SELECT fac.facid, fac.name, (income - expense) as revenue
+  from Facilities fac
+  JOIN
+  -- Calculate income from member bookings (Assume 1 member and 1 guest for each booking)
+  (SELECT fac.facid, fac.name, COUNT * (fac.membercost + fac.guestcost) as income,0
+     FROM Bookings bks
+     JOIN Facilities fac
+     ON bks.facid = fac.facid
+     GROUP by fac.facid, fac.name) as T1_income
+  ON T1_income.facid = fac.facid
+  JOIN 
+  -- Calculate expense from monthlymaintenance cost over the months spanned by the entries in the Bookings table
+  (SELECT fac.facid, 0, fac.monthlymaintenance * months as expense
+    FROM Facilities fac
+JOIN 
+    -- Determine the number of months spanned by dates in Bookings table for a given facility, 
+    -- rounded to the nearest integer
+    (select facid, round(DATEDIFF(maxi,mini) / 30) as months from 
+      ( select fac2.facid, max(bks2.starttime) as maxi, min(bks2.starttime) as mini
+           FROM Bookings bks2
+           JOIN Facilities fac2
+           ON fac2.facid = bks2.facid
+           GROUP BY fac2.facid
+       ) A1
+    ) as mm
+    ON 
+    mm.facid = fac.facid
+    ) as T1_expense
+  ON T1_expense.facid = fac.facid
+) B
+-- Show only facilities whose revenue is less than 1000
+where revenue < 1000
+"""
